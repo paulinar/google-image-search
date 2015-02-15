@@ -1,37 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-
-    <EditText
-        android:id="@+id/etSearchField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignBottom="@+id/btnSearch"
-        android:layout_toLeftOf="@+id/btnSearch"
-        android:hint="@string/search_prompt"
-        android:ems="10" />
-
-    <Button
-        android:id="@+id/btnSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:onClick="onImageSearch"
-        android:text="Search" />
-
-    <GridView
-        android:id="@+id/gvResults"
+    <com.etsy.android.grid.StaggeredGridView
+        android:id="@+id/staggeredGridViewResults"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/etSearchField"
-        android:numColumns="3"/>
+        android:layout_height="match_parent"
+        app:item_margin="8dp"
+        app:column_count="@integer/column_count" />
 
-</RelativeLayout>
+</FrameLayout>

@@ -9,5 +9,12 @@
     <string name="image_title_label">Image Title</string>
     <string name="image_result_label">Image Result</string>
     <string name="title_activity_image_display">ImageDisplayActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="image_size_label">Image Size</string>
+    <string name="color_filter_label">Color</string>
+    <string name="image_type_label">Image Type</string>
+    <string name="site_filter_label">Site Filter</string>
+    <string name="dialog_save">SAVE</string>
+    <string name="dialog_cancel">CANCEL</string>
 
 </resources>

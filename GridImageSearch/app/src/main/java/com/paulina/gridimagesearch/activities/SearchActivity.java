@@ -1,22 +1,23 @@
 package com.paulina.gridimagesearch.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.GridView;
 
+import com.etsy.android.grid.StaggeredGridView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.paulina.gridimagesearch.R;
 import com.paulina.gridimagesearch.adapters.ImageResultsAdapter;
+import com.paulina.gridimagesearch.fragments.AdvancedFiltersFragment;
 import com.paulina.gridimagesearch.models.ImageResult;
 
 import org.apache.http.Header;
@@ -29,8 +30,7 @@ import java.util.ArrayList;
 
 public class SearchActivity extends ActionBarActivity {
 
-    private EditText etSearchQuery;
-    private GridView gvResults;
+    private StaggeredGridView sgvResults;
     private ArrayList<ImageResult> imageResults;
     private ImageResultsAdapter aImageResults;
 
@@ -38,31 +38,31 @@ public class SearchActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        if (!isOnline()) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-            // set dialog message
-            alertDialogBuilder
-                    .setTitle("ERROR")
-                    .setMessage("No Network Connectivity!")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // if OK button is clicked, close current activity
-                            SearchActivity.this.finish();
-                        }
-                    });
-
-            // create alert dialog
-            AlertDialog alertDialog = alertDialogBuilder.create();
-
-            // show it
-            alertDialog.show();
-        }
+//        if (!isOnline()) {
+//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+//
+//            // set dialog message
+//            alertDialogBuilder
+//                    .setTitle("ERROR")
+//                    .setMessage("No Network Connectivity!")
+//                    .setCancelable(false)
+//                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            // if OK button is clicked, close current activity
+//                            SearchActivity.this.finish();
+//                        }
+//                    });
+//
+//            // create alert dialog
+//            AlertDialog alertDialog = alertDialogBuilder.create();
+//
+//            // show it
+//            alertDialog.show();
+//        }
         setupViews();
         imageResults = new ArrayList<ImageResult>(); // creates the data source
         aImageResults = new ImageResultsAdapter(this, imageResults); // attaches the data source to an adapter
-        gvResults.setAdapter(aImageResults); // link adapter to the adapterview (gridview)
+        sgvResults.setAdapter(aImageResults); // link adapter to the adapterview (gridview)
     }
 
     public Boolean isOnline() {
@@ -78,9 +78,9 @@ public class SearchActivity extends ActionBarActivity {
     }
 
     private void setupViews() {
-        etSearchQuery = (EditText) findViewById(R.id.etSearchField);
-        gvResults = (GridView) findViewById(R.id.gvResults);
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        etSearchQuery = (EditText) findViewById(R.id.etSearchField);
+        sgvResults = (StaggeredGridView) findViewById(R.id.staggeredGridViewResults);
+        sgvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Create an intent
@@ -102,11 +102,24 @@ public class SearchActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                doImageSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return true;
     }
 
-    public void onImageSearch(View view) {
-            String query = etSearchQuery.getText().toString();
+    public void doImageSearch(String query) {
             AsyncHttpClient client = new AsyncHttpClient();
             // https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=android&rsz=8
             String searchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + query + "&rsz=8";
@@ -141,9 +154,18 @@ public class SearchActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+//            Intent intent = new Intent(SearchActivity.this, SettingsActivity.class);
+//            startActivity(intent);
+            showAdvancedFiltersDialog();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showAdvancedFiltersDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        AdvancedFiltersFragment alertDialog = AdvancedFiltersFragment.newInstance("Some title");
+        alertDialog.show(fm, "fragment_alert");
     }
 }
