@@ -1,5 +1,7 @@
 package com.paulina.gridimagesearch.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -36,10 +38,43 @@ public class SearchActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        if (!isOnline()) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            // set dialog message
+            alertDialogBuilder
+                    .setTitle("ERROR")
+                    .setMessage("No Network Connectivity!")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // if OK button is clicked, close current activity
+                            SearchActivity.this.finish();
+                        }
+                    });
+
+            // create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // show it
+            alertDialog.show();
+        }
         setupViews();
         imageResults = new ArrayList<ImageResult>(); // creates the data source
         aImageResults = new ImageResultsAdapter(this, imageResults); // attaches the data source to an adapter
         gvResults.setAdapter(aImageResults); // link adapter to the adapterview (gridview)
+    }
+
+    public Boolean isOnline() {
+        try {
+            Process p1 = java.lang.Runtime.getRuntime().exec("ping -n 1 www.google.com");
+            int returnVal = p1.waitFor();
+            boolean reachable = (returnVal==0);
+            return reachable;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void setupViews() {
@@ -71,30 +106,30 @@ public class SearchActivity extends ActionBarActivity {
     }
 
     public void onImageSearch(View view) {
-        String query = etSearchQuery.getText().toString();
-        AsyncHttpClient client = new AsyncHttpClient();
-        // https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=android&rsz=8
-        String searchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + query + "&rsz=8";
-        client.get(searchUrl, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                Log.d("DEBUG", response.toString());
-                JSONArray imageResultsJson = null;
-                try {
-                    imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
-                    imageResults.clear(); // clear existing images from the array in cases where it's a new search
-//                    imageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
-                    // you can update the items of the array list through the adapter itself
-                    // when you make changes to the adapter, it does modify the underlying data for you automatically
-                    // this adds data to the array list & triggers notify data change
-                    aImageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            String query = etSearchQuery.getText().toString();
+            AsyncHttpClient client = new AsyncHttpClient();
+            // https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=android&rsz=8
+            String searchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + query + "&rsz=8";
+            client.get(searchUrl, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                    Log.d("DEBUG", response.toString());
+                    JSONArray imageResultsJson = null;
+                    try {
+                        imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
+                        imageResults.clear(); // clear existing images from the array in cases where it's a new search
+                        //                    imageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
+                        // you can update the items of the array list through the adapter itself
+                        // when you make changes to the adapter, it does modify the underlying data for you automatically
+                        // this adds data to the array list & triggers notify data change
+                        aImageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.i("INFO", imageResults.toString());
                 }
-                Log.i("INFO", imageResults.toString());
-            }
-        });
+            });
     }
 
     @Override

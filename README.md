@@ -1,5 +1,5 @@
 # Google Image Search
-A Google image searcher for Android.
+A Google image search client for Android.
 
 Time spent: XX hours spent in total
 
@@ -11,7 +11,7 @@ Time spent: XX hours spent in total
  * [x] Subsequent searches will have any filters applied to the search results
  * [x] User can tap on any image in results to see the image full-screen
  * [x] User can scroll down “infinitely” to continue loading more image results (up to 8 pages)
- * [x] *Optional*: blah
+ * [x] *Optional*: Robust error handling, check if internet is available, handle error cases, network failures
 
 Also implemented ViewHolder pattern for fast lookups.
 
