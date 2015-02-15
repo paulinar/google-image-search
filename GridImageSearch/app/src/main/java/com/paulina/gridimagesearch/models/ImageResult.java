@@ -4,12 +4,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by pramos on 2/14/15.
  */
-public class ImageResult {
+public class ImageResult implements Serializable { // makes ImageResult object capable of being encoded into the intent extra system
+    private static final long serialVersionUID = 8724804852739320502L;
     public String fullUrl;
     public String thumbUrl;
     public String title;
@@ -21,7 +23,7 @@ public class ImageResult {
     public ImageResult(JSONObject json) {
         try {
             this.fullUrl = json.getString("url");
-            this.thumbUrl = json.getString("thumbUrl");
+            this.thumbUrl = json.getString("tbUrl");
             this.title = json.getString("title");
         } catch (JSONException e) {
             e.printStackTrace();

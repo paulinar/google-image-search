@@ -1,11 +1,13 @@
 package com.paulina.gridimagesearch.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 
@@ -43,6 +45,22 @@ public class SearchActivity extends ActionBarActivity {
     private void setupViews() {
         etSearchQuery = (EditText) findViewById(R.id.etSearchField);
         gvResults = (GridView) findViewById(R.id.gvResults);
+        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Create an intent
+                Intent intent = new Intent(SearchActivity.this, ImageDisplayActivity.class);
+
+                // Get image result to display
+                ImageResult result = imageResults.get(position);
+
+                // Pass image result into intent
+                intent.putExtra("result", result);
+
+                // Launch the new activity
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
