@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import com.paulina.gridimagesearch.R;
+import com.paulina.gridimagesearch.helpers.TouchImageView;
 import com.paulina.gridimagesearch.models.ImageResult;
 import com.squareup.picasso.Picasso;
 
@@ -22,7 +22,8 @@ public class ImageDisplayActivity extends ActionBarActivity {
         ImageResult result = (ImageResult) getIntent().getSerializableExtra("result");
 
         // Find the image view
-        ImageView ivFullscreenImage = (ImageView) findViewById(R.id.ivFullscreenImage);
+//        ImageView ivFullscreenImage = (ImageView) findViewById(R.id.ivFullscreenImage);
+        TouchImageView ivFullscreenImage = (TouchImageView) findViewById(R.id.ivFullscreenImage);
 
         // Load the image url into the ImageView using picasso
         Picasso.with(this)

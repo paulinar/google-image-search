@@ -14,8 +14,10 @@ Time spent: XX hours spent in total
  * [x] *Optional*: Robust error handling, check if internet is available, handle error cases, network failures
  * [x] *Optional*: Use the ActionBar SearchView or custom layout as the query box instead of an EditText
  * [] *Optional*: User can share an image to their friends or email it to themselves
- * [] *Optional*: Replace Filter Settings Activity with a lightweight modal overlay
- * [] *Optional*: Improve the user interface and experiment with image assets and/or styling and coloring
+ * [x] *Optional*: Replace Filter Settings Activity with a lightweight modal overlay
+ * [x] *Optional*: Improve the user interface and experiment with image assets and/or styling and coloring
+ * [x] *Optional*: Use the StaggeredGridView to display improve the grid of image results
+ * [x] *Optional*: User can zoom or pan images displayed in full-screen detail view
 
 Also implemented ViewHolder pattern for fast lookups.
 
