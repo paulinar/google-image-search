@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.loopj.android.http.AsyncHttpClient;
@@ -84,7 +83,7 @@ public class SearchActivity extends ActionBarActivity implements AdvancedFilters
     @Override
     public void getDataFromDialog(Bundle result) {
         mFilters = (Filters)result.getSerializable("filters");
-        mImageSize = mFilters.imageType;
+        mImageSize = mFilters.imageSize;
         mImageColor = mFilters.colorFilter;
         mImageType = mFilters.imageType;
         mSite = mFilters.siteFilter;
@@ -148,7 +147,7 @@ public class SearchActivity extends ActionBarActivity implements AdvancedFilters
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                return true;
             }
         });
         return true;
@@ -177,16 +176,7 @@ public class SearchActivity extends ActionBarActivity implements AdvancedFilters
                 }
                 Log.i("INFO", imageResults.toString());
             }
-
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                noResultsMessage();
-//            }
         });
-    }
-
-    private void noResultsMessage() {
-        Toast.makeText(this, "No search results matched your query", Toast.LENGTH_SHORT).show();
     }
 
     @Override
