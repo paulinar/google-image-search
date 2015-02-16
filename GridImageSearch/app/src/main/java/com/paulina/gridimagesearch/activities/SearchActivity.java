@@ -1,5 +1,7 @@
 package com.paulina.gridimagesearch.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -49,28 +51,6 @@ public class SearchActivity extends ActionBarActivity implements AdvancedFilters
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-//        if (!isOnline()) {
-//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-//
-//            // set dialog message
-//            alertDialogBuilder
-//                    .setTitle("ERROR")
-//                    .setMessage("No Network Connectivity!")
-//                    .setCancelable(false)
-//                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            // if OK button is clicked, close current activity
-//                            SearchActivity.this.finish();
-//                        }
-//                    });
-//
-//            // create alert dialog
-//            AlertDialog alertDialog = alertDialogBuilder.create();
-//
-//            // show it
-//            alertDialog.show();
-//        }
         setupViews();
         imageResults = new ArrayList<ImageResult>(); // creates the data source
         aImageResults = new ImageResultsAdapter(this, imageResults); // attaches the data source to an adapter
@@ -154,6 +134,28 @@ public class SearchActivity extends ActionBarActivity implements AdvancedFilters
     }
 
     public void doImageSearch(String query) {
+
+        if (!isOnline()) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            // set dialog message
+            alertDialogBuilder
+                    .setTitle("ERROR")
+                    .setMessage("No Network Connectivity!")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // if OK button is clicked, close current activity
+                            SearchActivity.this.finish();
+                        }
+                    });
+
+            // create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // show it
+            alertDialog.show();
+        }
 
         String url = composeUrl(query);
         mOffset += 8;
