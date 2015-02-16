@@ -22,12 +22,14 @@
 
     <Spinner
         android:id="@+id/spinnerImageSize"
+        android:layout_marginLeft="5dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/tvImageSizeLabel"
         android:layout_alignParentRight="true"
-        android:entries="@array/imageSizes"/>
+        android:entries="@array/imageSizes"
+        android:textSize="13sp"/>
 
     <TextView
         android:id="@+id/tvColorFilterLabel"
@@ -43,12 +45,14 @@
 
     <Spinner
         android:id="@+id/spinnerColorFilter"
+        android:layout_marginLeft="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/spinnerImageSize"
         android:layout_toRightOf="@+id/tvColorFilterLabel"
         android:layout_alignParentRight="true"
-        android:entries="@array/colors"/>
+        android:entries="@array/colors"
+        android:textSize="13sp"/>
 
     <TextView
         android:id="@+id/tvImageTypeLabel"
@@ -63,13 +67,15 @@
 
     <Spinner
         android:id="@+id/spinnerImageType"
+        android:layout_marginLeft="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/tvImageTypeLabel"
         android:layout_below="@+id/spinnerColorFilter"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:entries="@array/imageTypes"/>
+        android:entries="@array/imageTypes"
+        android:textSize="13sp"/>
 
     <TextView
         android:id="@+id/tvSiteFilterLabel"
@@ -80,10 +86,12 @@
         android:layout_alignParentStart="true"
         android:paddingTop="15dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/site_filter_label"/>
+        android:text="@string/site_filter_label"
+        />
 
     <EditText
         android:id="@+id/etSiteName"
+        android:layout_marginLeft="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/tvSiteFilterLabel"
@@ -91,7 +99,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/spinnerImageType"
-        android:hint="e.g. codepath.com" />
+        android:hint="e.g. codepath.com"
+        android:textSize="13sp"/>
 
     <Button
         android:id="@+id/btnSave"
@@ -99,15 +108,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/dialog_save"
+        android:textSize="13sp"
         android:layout_below="@+id/etSiteName"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:id="@+id/btnCancel"
+        android:layout_marginLeft="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/dialog_cancel"
+        android:textSize="13sp"
         android:layout_below="@+id/etSiteName"
         android:layout_toRightOf="@id/btnSave"
         android:layout_centerHorizontal="true" />

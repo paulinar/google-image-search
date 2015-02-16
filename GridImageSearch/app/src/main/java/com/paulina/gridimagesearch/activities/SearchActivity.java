@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.loopj.android.http.AsyncHttpClient;
@@ -18,6 +19,8 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.paulina.gridimagesearch.R;
 import com.paulina.gridimagesearch.adapters.ImageResultsAdapter;
 import com.paulina.gridimagesearch.fragments.AdvancedFiltersFragment;
+import com.paulina.gridimagesearch.helpers.EndlessScrollListener;
+import com.paulina.gridimagesearch.models.Filters;
 import com.paulina.gridimagesearch.models.ImageResult;
 
 import org.apache.http.Header;
@@ -28,16 +31,26 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class SearchActivity extends ActionBarActivity {
+public class SearchActivity extends ActionBarActivity implements AdvancedFiltersFragment.AdvancedFiltersFragmentDialogListener {
 
     private StaggeredGridView sgvResults;
     private ArrayList<ImageResult> imageResults;
     private ImageResultsAdapter aImageResults;
+    private FragmentManager mFragmentManager;
+    private AdvancedFiltersFragment mFiltersDialog;
+    private Filters mFilters;
+    private String mImageSize;
+    private String mImageColor;
+    private String mImageType;
+    private String mSite;
+    private String mQuery;
+    private int mOffset = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
 //        if (!isOnline()) {
 //            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 //
@@ -63,6 +76,18 @@ public class SearchActivity extends ActionBarActivity {
         imageResults = new ArrayList<ImageResult>(); // creates the data source
         aImageResults = new ImageResultsAdapter(this, imageResults); // attaches the data source to an adapter
         sgvResults.setAdapter(aImageResults); // link adapter to the adapterview (gridview)
+
+        mFragmentManager = getSupportFragmentManager();
+        mFiltersDialog = AdvancedFiltersFragment.newInstance(mFilters);
+    }
+
+    @Override
+    public void getDataFromDialog(Bundle result) {
+        mFilters = (Filters)result.getSerializable("filters");
+        mImageSize = mFilters.imageType;
+        mImageColor = mFilters.colorFilter;
+        mImageType = mFilters.imageType;
+        mSite = mFilters.siteFilter;
     }
 
     public Boolean isOnline() {
@@ -96,6 +121,14 @@ public class SearchActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+        // Attach the listener to the AdapterView onCreate
+        sgvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                doImageSearch(mQuery);
+            }
+        });
     }
 
     @Override
@@ -107,7 +140,9 @@ public class SearchActivity extends ActionBarActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                doImageSearch(query);
+                mQuery = query;
+                imageResults.clear(); // clear existing images from the array in cases where it's a new search
+                doImageSearch(mQuery);
                 return true;
             }
 
@@ -120,29 +155,38 @@ public class SearchActivity extends ActionBarActivity {
     }
 
     public void doImageSearch(String query) {
-            AsyncHttpClient client = new AsyncHttpClient();
-            // https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=android&rsz=8
-            String searchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + query + "&rsz=8";
-            client.get(searchUrl, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
-                    Log.d("DEBUG", response.toString());
-                    JSONArray imageResultsJson = null;
-                    try {
-                        imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
-                        imageResults.clear(); // clear existing images from the array in cases where it's a new search
-                        //                    imageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
-                        // you can update the items of the array list through the adapter itself
-                        // when you make changes to the adapter, it does modify the underlying data for you automatically
-                        // this adds data to the array list & triggers notify data change
-                        aImageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    Log.i("INFO", imageResults.toString());
+
+        String url = composeUrl(query);
+        mOffset += 8;
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                Log.d("DEBUG", response.toString());
+                JSONArray imageResultsJson = null;
+                try {
+                    imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
+                    // you can update the items of the array list through the adapter itself
+                    // when you make changes to the adapter, it does modify the underlying data for you automatically
+                    // this adds data to the array list & triggers notify data change
+                    aImageResults.addAll(ImageResult.fromJSONArray(imageResultsJson)); // or imageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            });
+                Log.i("INFO", imageResults.toString());
+            }
+
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                noResultsMessage();
+//            }
+        });
+    }
+
+    private void noResultsMessage() {
+        Toast.makeText(this, "No search results matched your query", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -154,8 +198,6 @@ public class SearchActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-//            Intent intent = new Intent(SearchActivity.this, SettingsActivity.class);
-//            startActivity(intent);
             showAdvancedFiltersDialog();
             return true;
         }
@@ -164,8 +206,24 @@ public class SearchActivity extends ActionBarActivity {
     }
 
     private void showAdvancedFiltersDialog() {
-        FragmentManager fm = getSupportFragmentManager();
-        AdvancedFiltersFragment alertDialog = AdvancedFiltersFragment.newInstance("Some title");
-        alertDialog.show(fm, "fragment_alert");
+        mFiltersDialog.show(mFragmentManager, "filters dialog");
+    }
+
+    private String composeUrl(String query) {
+        String params = "";
+        if (mImageColor != null && !mImageColor.equals("any")) {
+            params += "&imgcolor=" + mImageColor;
+        }
+        if (mImageSize != null && !mImageSize.equals("any")) {
+            params += "&imgsz=" + mImageSize;
+        }
+        if (mImageType != null && !mImageType.equals("any")) {
+            params += "&imgtype=" + mImageType;
+        }
+        if (!mSite.equals("") && !mSite.equals("any")) {
+            params += "&as_sitesearch=" + mSite;
+        }
+        String url = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + query + "&rsz=8&start=" + mOffset + params;
+        return url;
     }
 }
